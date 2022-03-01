@@ -3,6 +3,7 @@ package com.atguigu.yygh.hosp.controller;
 
 import com.atguigu.yygh.common.result.R;
 import com.atguigu.yygh.hosp.service.HospitalSetService;
+import com.atguigu.yygh.hosp.utils.MD5;
 import com.atguigu.yygh.model.hosp.HospitalSet;
 import com.atguigu.yygh.vo.hosp.HospitalSetQueryVo;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -15,6 +16,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Random;
 
 /**
  * <p>
@@ -122,6 +124,88 @@ public class HospitalSetController {
 
         return R.ok().data("total", pageParam.getTotal()).data("rows", pageParam.getRecords());
 
+    }
+
+
+    /**
+     * 新增医院设置
+     * @param hospitalSet
+     * @return
+     */
+    @ApiOperation(value ="新增医院设置")
+    @PostMapping("/saveHospitalSet")
+    public R save(
+            @ApiParam(name = "hospitalSet", value = "医院设置对象", required = true)
+            @RequestBody HospitalSet hospitalSet) {
+        //设置状态 1使用  0不能使用
+        hospitalSet.setStatus(1);
+        //签名密钥
+        Random random = new Random();
+        hospitalSet.setSignKey(MD5.encrypt(System.currentTimeMillis() +""+random.nextInt(1000)));
+
+        hospitalSetService.save(hospitalSet);
+        return R.ok();
+    }
+
+    /**
+     * 根据id查询医院设置
+     * @param id
+     * @return
+     */
+    @ApiOperation(value = "根据ID查询医院设置")
+    @GetMapping("/getHospSet/{id}")
+    public R getById(
+            @ApiParam(name = "id", value = "医院设置ID", required = true)
+            @PathVariable String id){
+
+        HospitalSet teacher = hospitalSetService.getById(id);
+        return R.ok().data("item", teacher);
+    }
+
+    /**
+     * 根据io修改医院设置
+     * @param hospitalSet
+     * @return
+     */
+    @ApiOperation(value = "根据ID修改医院设置")
+    @PostMapping("/updateHospSet")
+    public R updateById(@ApiParam(name = "hospitalSet", value = "医院设置对象", required = true)
+                        @RequestBody HospitalSet hospitalSet){
+        hospitalSetService.updateById(hospitalSet);
+        return R.ok();
+    }
+
+
+    /**
+     * 批量删除医院设置
+     * @param idList
+     * @return
+     */
+    @ApiOperation(value = "批量删除医院设置")
+    @DeleteMapping("/batchRemove")
+    public R batchRemoveHospitalSet(@ApiParam(name = "idList",value ="批量删除的id") @RequestBody List<Long> idList) {
+        hospitalSetService.removeByIds(idList);
+        return R.ok();
+    }
+
+
+    /**
+     * 医院设置锁定和解锁
+     * @param id
+     * @param status
+     * @return
+     */
+    @ApiOperation(value = "医院设置锁定和解锁")
+    @PutMapping("/lockHospitalSet/{id}/{status}")
+    public R lockHospitalSet(@PathVariable Long id,
+                             @PathVariable Integer status) {
+        //根据id查询医院设置信息
+        HospitalSet hospitalSet = hospitalSetService.getById(id);
+        //设置状态
+        hospitalSet.setStatus(status);
+        //调用方法
+        hospitalSetService.updateById(hospitalSet);
+        return R.ok();
     }
 
 
