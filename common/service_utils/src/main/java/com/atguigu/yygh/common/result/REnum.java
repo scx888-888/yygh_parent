@@ -1,8 +1,5 @@
 package com.atguigu.yygh.common.result;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public enum REnum {
 
     SUCCESS(20000,true,"成功"),

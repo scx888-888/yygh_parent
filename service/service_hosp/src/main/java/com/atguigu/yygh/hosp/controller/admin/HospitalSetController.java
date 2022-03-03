@@ -1,4 +1,4 @@
-package com.atguigu.yygh.hosp.controller;
+package com.atguigu.yygh.hosp.controller.admin;
 
 
 import com.atguigu.yygh.common.result.R;
@@ -72,6 +72,7 @@ public class HospitalSetController {
      * @param limit
      * @return
      */
+    @ApiOperation(value = "分页查询")
     @GetMapping("{page}/{limit}")
     public R pageList(
             @ApiParam(name = "page", value = "当前页码", required = true)
@@ -101,6 +102,7 @@ public class HospitalSetController {
      * @param hospitalSetQueryVo
      * @return
      */
+    @ApiOperation(value = "带条件分页查询")
     @PostMapping("{page}/{limit}")
     public R getHospitalSetPage(
             @ApiParam(name = "page", value = "当前页码", required = true)
@@ -109,11 +111,11 @@ public class HospitalSetController {
             @PathVariable long limit,
             @ApiParam(name = "hospitalSetQueryVo", value = "封装查询条件", required = false)
             @RequestBody HospitalSetQueryVo hospitalSetQueryVo) {
-        Page pageParam = new Page(page, limit);
+        Page<HospitalSet> pageParam = new Page(page, limit);
         QueryWrapper<HospitalSet> queryWrapper = new QueryWrapper<>();
 
         if (!StringUtils.isEmpty(hospitalSetQueryVo.getHosname())) {
-            queryWrapper.like("hostname", hospitalSetQueryVo.getHosname());
+            queryWrapper.like("hosname", hospitalSetQueryVo.getHosname());
         }
 
         if (!StringUtils.isEmpty(hospitalSetQueryVo.getHoscode())) {
@@ -121,6 +123,10 @@ public class HospitalSetController {
         }
 
         hospitalSetService.page(pageParam, queryWrapper);
+
+        System.out.println("============"+pageParam.getTotal());
+        System.out.println(pageParam.getRecords());
+        System.out.println("*********************************");
 
         return R.ok().data("total", pageParam.getTotal()).data("rows", pageParam.getRecords());
 
@@ -139,6 +145,7 @@ public class HospitalSetController {
             @RequestBody HospitalSet hospitalSet) {
         //设置状态 1使用  0不能使用
         hospitalSet.setStatus(1);
+        System.out.println("hospitalSet = " + hospitalSet);
         //签名密钥
         Random random = new Random();
         hospitalSet.setSignKey(MD5.encrypt(System.currentTimeMillis() +""+random.nextInt(1000)));
@@ -158,12 +165,13 @@ public class HospitalSetController {
             @ApiParam(name = "id", value = "医院设置ID", required = true)
             @PathVariable String id){
 
-        HospitalSet teacher = hospitalSetService.getById(id);
-        return R.ok().data("item", teacher);
+        HospitalSet hospitalSet = hospitalSetService.getById(id);
+
+        return R.ok().data("item", hospitalSet);
     }
 
     /**
-     * 根据io修改医院设置
+     * 根据id修改医院设置
      * @param hospitalSet
      * @return
      */
@@ -184,6 +192,7 @@ public class HospitalSetController {
     @ApiOperation(value = "批量删除医院设置")
     @DeleteMapping("/batchRemove")
     public R batchRemoveHospitalSet(@ApiParam(name = "idList",value ="批量删除的id") @RequestBody List<Long> idList) {
+        System.out.println("进来了");
         hospitalSetService.removeByIds(idList);
         return R.ok();
     }
@@ -207,6 +216,20 @@ public class HospitalSetController {
         hospitalSetService.updateById(hospitalSet);
         return R.ok();
     }
+
+    @ApiOperation(value = "删除医院设置信息")
+    @DeleteMapping("/removeHospById/{id}")
+    public R removeHospById(@PathVariable Long id ){
+        System.out.println("id = " + id);
+        System.out.println("删除执行了");
+        if(id==6){
+            System.out.println("R.error() = " + R.error());
+            return  R.error();
+        }
+        hospitalSetService.removeById(id);
+        return  R.ok();
+    }
+
 
 
 }
