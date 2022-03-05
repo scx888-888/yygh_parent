@@ -35,6 +35,7 @@ public class HospitalSetController {
     @Autowired
     private HospitalSetService hospitalSetService;
 
+
     /**
      * 查询所有医院设置
      */
@@ -124,9 +125,10 @@ public class HospitalSetController {
 
         hospitalSetService.page(pageParam, queryWrapper);
 
-        System.out.println("============"+pageParam.getTotal());
-        System.out.println(pageParam.getRecords());
-        System.out.println("*********************************");
+        //System.out.println("============"+pageParam.getTotal());
+        //System.out.println(pageParam.getRecords());
+        //System.out.println("*********************************");
+
 
         return R.ok().data("total", pageParam.getTotal()).data("rows", pageParam.getRecords());
 
