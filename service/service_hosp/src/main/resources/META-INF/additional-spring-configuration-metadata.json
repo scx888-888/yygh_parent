@@ -1,0 +1,8 @@
+{
+  "properties": [
+    {
+      "name": "ring.data.mongodb.uri",
+      "type": "java.lang.String",
+      "description": "Description for ring.data.mongodb.uri."
+  }
+] }

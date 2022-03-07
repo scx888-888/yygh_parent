@@ -16,6 +16,9 @@
     </modules>
 
     <dependencies>
+
+
+
         <dependency>
             <groupId>com.atguigu</groupId>
             <artifactId>model</artifactId>

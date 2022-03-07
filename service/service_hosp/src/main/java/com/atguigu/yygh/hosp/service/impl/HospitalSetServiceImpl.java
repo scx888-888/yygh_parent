@@ -18,4 +18,13 @@ import org.springframework.stereotype.Service;
 @Service
 public class HospitalSetServiceImpl extends ServiceImpl<HospitalSetMapper, HospitalSet> implements HospitalSetService {
 
+    /**
+     * 根据医院id获取医院密钥
+     * @param hoscode
+     * @return
+     */
+    @Override
+    public String getSignKey(String hoscode) {
+        return "1";
+    }
 }
