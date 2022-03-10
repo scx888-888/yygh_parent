@@ -9,6 +9,7 @@ import com.atguigu.yygh.model.cmn.Dict;
 import com.atguigu.yygh.vo.cmn.DictEeVo;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -47,7 +48,7 @@ public class DictServiceImpl extends ServiceImpl<DictMapper, Dict> implements Di
     @Override
     @Cacheable(value = "dict", key = "'selectIndexList'+#id")
     public List<Dict> findChildData(Long id) {
-        System.out.println("该方法执行了！！！！！！！！！！！！！！！！！！");
+        //System.out.println("该方法执行了！！！！！！！！！！！！！！！！！！");
         QueryWrapper<Dict> wrapper = new QueryWrapper<>();
         wrapper.eq("parent_id", id);
         List<Dict> dictList = baseMapper.selectList(wrapper);
@@ -62,7 +63,7 @@ public class DictServiceImpl extends ServiceImpl<DictMapper, Dict> implements Di
 
 
     /**
-     * 导出（写操作）
+     * 导出
      * @param response
      */
     @Override
@@ -97,7 +98,7 @@ public class DictServiceImpl extends ServiceImpl<DictMapper, Dict> implements Di
     }
 
     /**
-     * 导入文件（写操作）
+     * 导入文件
      * @param file
      */
     @Override
@@ -107,6 +108,54 @@ public class DictServiceImpl extends ServiceImpl<DictMapper, Dict> implements Di
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * 查询数据字典
+     * @param value
+     * @param parentDictCode
+     * @return
+     */
+    @Override
+    public String getNameByParentDictCodeAndValue(String parentDictCode,String value) {
+        //如果value能唯一定位数据字典，parentDictCode可以传空，例如：省市区的value值能够唯一确定
+        if(StringUtils.isEmpty(parentDictCode)){
+            Dict dict = baseMapper.selectOne(new QueryWrapper<Dict>().eq("value", value));
+            if(dict != null){
+                return dict.getName();
+            }
+        }else {
+            Dict parentDict = this.getDictByDictCode(parentDictCode);
+            if (parentDict != null){
+                Dict dict = baseMapper.selectOne(new QueryWrapper<Dict>().eq("parent_id", parentDict.getId()).eq("value", value));
+                if(dict != null){
+                    return dict.getName();
+                }
+            }
+        }
+         return "";
+    }
+
+    /**
+     * 根据dictCode查询下级节点
+     * @param dictCode
+     * @return
+     */
+    @Override
+    public List<Dict> findByDictCode(String dictCode) {
+        Dict codeDict = this.getDictByDictCode(dictCode);
+        if(null == codeDict) {
+            return null;
+        }
+        return this.findChildData(codeDict.getId());
+    }
+
+    //实现方法 根据dict_code查询
+    private Dict getDictByDictCode(String dictCode) {
+        QueryWrapper<Dict> wrapper = new QueryWrapper<>();
+        wrapper.eq("dict_code",dictCode);
+        Dict codeDict = baseMapper.selectOne(wrapper);
+        return codeDict;
     }
 
     /**

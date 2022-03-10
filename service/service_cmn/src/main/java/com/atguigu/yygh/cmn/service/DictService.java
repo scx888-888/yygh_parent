@@ -26,10 +26,29 @@ public interface DictService extends IService<Dict> {
     List<Dict> findChildData(Long id);
 
     /**
-     * 导出（写操作）
+     * 导出
      * @param response
      */
     void exportData(HttpServletResponse response);
 
+    /**
+     * 导入
+     * @param file
+     */
     void importDictData(MultipartFile file);
+
+    /**
+     *
+     * @param value
+     * @param parentDictCode
+     * @return
+     */
+    String getNameByParentDictCodeAndValue(String parentDictCode,String value);
+
+    /**
+     * 根据dictcode查询下级节点
+     * @param dictCode
+     * @return
+     */
+    List<Dict> findByDictCode(String dictCode);
 }

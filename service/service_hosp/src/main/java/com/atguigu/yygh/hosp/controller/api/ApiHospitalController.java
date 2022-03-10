@@ -32,7 +32,7 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/api/hosp")
-public class HospitalController {
+public class ApiHospitalController {
 
     @Autowired
     private HospitalSetService hospitalSetService;
@@ -219,6 +219,9 @@ public class HospitalController {
         scheduleService.removeSchedule(hoscode, hosScheduleId);
         return Result.ok();
     }
+
+
+
 
 
 }

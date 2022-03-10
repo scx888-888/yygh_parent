@@ -6,6 +6,7 @@ import com.atguigu.yygh.common.result.R;
 import com.atguigu.yygh.model.cmn.Dict;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,12 +25,11 @@ import java.util.List;
 @RestController
 @RequestMapping("/admin/cmn/dict")
 @Api(description = "数据字典接口")
-@CrossOrigin
+//@CrossOrigin
 public class DictController {
 
     @Autowired
     private DictService dictService;
-
 
 
     /**
@@ -48,6 +48,21 @@ public class DictController {
     }
 
     /**
+     * 根据dictCode查询下级节点
+     * @param dictCode
+     * @return
+     */
+    @ApiOperation(value = "根据dictCode获取下级节点")
+    @GetMapping(value = "/findByDictCode/{dictCode}")
+    public R findByDictCode(
+            @ApiParam(name = "dictCode", value = "节点编码", required = true)
+            @PathVariable String dictCode) {
+        List<Dict> list = dictService.findByDictCode(dictCode);
+        return R.ok().data("list",list);
+    }
+
+
+    /**
      * 导出文件（写操作）
      */
     @ApiOperation(value = "导出文件")
@@ -59,6 +74,7 @@ public class DictController {
 
     /**
      * 导入文件（读操作）
+     *
      * @param file
      * @return
      */
@@ -68,6 +84,36 @@ public class DictController {
         dictService.importDictData(file);
         return R.ok();
     }
+
+
+    /**
+     * 1、根据省、市、区标号查询对应的地址信息
+     */
+    @ApiOperation(value = "获取数据字典名称")
+    @GetMapping("/getName/{parentDictCode}/{value}")
+    public String getName(@ApiParam(name = "parentDictCode", value = "上级编码", required = true)
+                          @PathVariable("parentDictCode") String parentDictCode,
+                          @ApiParam(name = "value", value = "值", required = true)
+                          @PathVariable("value") String value) {
+
+        return dictService.getNameByParentDictCodeAndValue(parentDictCode,value);
+
+    }
+
+    /**
+     * 根据医院等级编号和hoscode查询医院等级
+     */
+    @ApiOperation(value = "获取数据字典名称")
+    @GetMapping(value = "/getName/{value}")
+    public String getName(
+            @ApiParam(name = "value", value = "值", required = true)
+            @PathVariable("value") String value) {
+        return dictService.getNameByParentDictCodeAndValue(null, value);
+    }
+
+
+
+
 
 }
 

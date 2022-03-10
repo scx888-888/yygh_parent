@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
  */
 @RestController
 @RequestMapping("/admin/user")
-@CrossOrigin//跨域操作
+//@CrossOrigin//跨域操作
 @Api(description = "管理员登录")
 public class UserLoginController {
 

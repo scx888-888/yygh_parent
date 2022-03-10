@@ -28,7 +28,7 @@ import java.util.Random;
  */
 @RestController
 @RequestMapping("/admin/hosp/hospitalSet")
-@CrossOrigin//跨域操作
+//@CrossOrigin//跨域操作
 @Api(description = "医院设置接口")
 public class HospitalSetController {
 
